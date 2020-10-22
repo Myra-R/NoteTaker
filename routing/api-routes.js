@@ -1,5 +1,7 @@
 const fs = require("fs");
 var data = JSON.parse(fs.readFileSync("./db/db.json", "utf8"));
+const { v4: uuidv4 } = require('uuid');
+//console.log(uuidv4()); // ⇨ '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d'
 
 
 module.exports = function(app) {
@@ -10,7 +12,7 @@ module.exports = function(app) {
 
     });
 
-    app.get("/api/notes/:id", function(req, res) {
+    app.get("/routing/api/:id", function(req, res) {
 
         res.json(data[Number(req.params.id)]);
 
@@ -22,7 +24,7 @@ module.exports = function(app) {
         let newNote = req.body;
         let uniqueId = (data.length).toString();
         console.log(uniqueId);
-        newNote.id = uniqueId;
+        newNote.id = uuidv4();
         data.push(newNote);
         
         fs.writeFileSync("./db/db.json", JSON.stringify(data), function(err) {
@@ -42,10 +44,7 @@ module.exports = function(app) {
         data = data.filter(currentNote => {
            return currentNote.id != noteId;
         });
-        for (currentNote of data) {
-            currentNote.id = newId.toString();
-            newId++;
-        }
+     
         fs.writeFileSync("./db/db.json", JSON.stringify(data));
         res.json(data);
     }); 
